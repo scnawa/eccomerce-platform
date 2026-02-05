@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Link } from 'react-router-dom';
+import { FaHome, FaShoppingCart, FaUser, FaSearch } from 'react-icons/fa';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -12,37 +13,33 @@ const Navbar = () => {
           Random Logo
         </Link>
         
-        {/* Navigation Links */}
-        <ul className="nav-menu">
-          <li className="nav-item">
-            <Link to="/" className="nav-link">
-              Home
+        <div className="navbar-search">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="search-input"
+          />
+        </div>
+
+        <ul className="nav-icons">
+          <li>
+            <Link to="/" className="nav-icon">
+              <FaHome />
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/about" className="nav-link">
-              About
+          <li>
+            <Link to="/cart" className="nav-icon">
+              <FaShoppingCart />
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/services" className="nav-link">
-              Services
+          <li>
+            <Link to="/profile" className="nav-icon">
+              <FaUser />
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/contact" className="nav-link">
-              Contact
-            </Link>
-          </li>
-          {/* Add more navigation items as needed */}
         </ul>
         
-        {/* Optional: Mobile menu button */}
-        <div className="menu-icon">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
       </div>
     </nav>
   );
