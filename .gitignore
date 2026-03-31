@@ -2,6 +2,7 @@
 
 # ===== Frontend / Node =====
 node_modules/
+fontend/node_modules
 .cache/
 node_modules/.cache/
 coverage/
@@ -48,4 +49,4 @@ venv.bak/
 
 # ===== OS junk =====
 .DS_Store
-Thumbs.dbnode_modules/
+Thumbs.db
