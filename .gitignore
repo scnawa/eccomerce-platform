@@ -48,4 +48,4 @@ venv.bak/
 
 # ===== OS junk =====
 .DS_Store
-Thumbs.db
+Thumbs.dbnode_modules/
