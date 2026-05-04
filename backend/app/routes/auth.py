@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, get_jwt, jwt_required
+from flask import Blueprint, request, jsonify, make_response
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, jwt_required, set_access_cookies, unset_jwt_cookies
 from app.extensions import db, blacklist
 from app.models import User
 
@@ -57,15 +57,11 @@ def login():
 
     access_token = create_access_token(identity=str(user.id))
 
-    return jsonify({
-        "message": "Login successful",
-        "access_token": access_token,
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "username": user.username
-        }
-    }), 200
+    response = make_response(jsonify({"message": "Login successful"}))
+    
+    set_access_cookies(response, access_token)
+
+    return response
 
 
 @auth_bp.route("/logout", methods=["POST"])
@@ -74,10 +70,32 @@ def logout():
     jti = get_jwt()["jti"]  # unique token ID
     blacklist.add(jti)
 
-    return jsonify({"message": "Logged out successfully"}), 200
+    response = make_response(jsonify({"message": "Logged out"}))
+
+    unset_jwt_cookies(response)
+
+    return response
 
 @auth_bp.route("/blacklist", methods=["GET"])
 def get_blacklist():
     return jsonify({
         "blacklist": list(blacklist)
     })
+
+@auth_bp.route("/profile", methods = ["GET"])
+@jwt_required()
+def profile():
+    user_id = int(get_jwt_identity())
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "email": user.email,
+        "username": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name
+    }), 200

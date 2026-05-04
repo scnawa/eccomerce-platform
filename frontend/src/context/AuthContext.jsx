@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { getCookie } from "../utils/cookies";
 
 const AuthContext = createContext();
 
@@ -8,40 +9,49 @@ export const AuthProvider = ({ children }) => {
 
   // Load user on app start
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded = jwtDecode(token);
+        const res = await fetch("/auth/profile", {
+          credentials: "include",
+        });
 
-        // check expiry
-        if (decoded.exp * 1000 < Date.now()) {
-          localStorage.removeItem("token");
-          setUser(null);
-        } else {
-          setUser(decoded);
-        }
+        if (!res.ok) throw new Error();
+
+        const data = await res.json();
+        setUser(data);
       } catch {
         setUser(null);
       }
-    }
+    };
+
+    fetchUser();
   }, []);
 
   // Login
-  const login = (token) => {
-    localStorage.setItem("token", token);
-    const decoded = jwtDecode(token);
-    setUser(decoded);
+  const login = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/auth/profile", {
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error();
+
+      const data = await res.json();
+      setUser(data);
+    } catch {
+      setUser(null);
+    }
   };
 
   // Logout
   const logout = async () => {
-      const token = localStorage.getItem("token");
+      const csrfToken = getCookie("csrf_access_token");
       try {
         await fetch("http://localhost:5000/auth/logout", {
           method: "POST",
+          credentials: "include",
           headers: {
-            Authorization: `Bearer ${token}`,
+            "X-CSRF-TOKEN": csrfToken,
           },
         });
       } catch (err) {
@@ -49,7 +59,6 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Always clear frontend
-      localStorage.removeItem("token");
       setUser(null);
   };
 

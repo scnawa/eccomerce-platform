@@ -15,7 +15,7 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const URL = "http://localhost:5000/";
+    const URL = "http://localhost:5000";
     try {
       const res = await fetch(`${URL}/auth/login`, {
         method: "POST",
@@ -23,6 +23,7 @@ const LoginPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -32,7 +33,7 @@ const LoginPage = () => {
       }
 
       // store JWT token
-      login(data.access_token);
+      await login();
 
       // redirect after login
       navigate("/");

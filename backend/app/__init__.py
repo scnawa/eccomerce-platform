@@ -19,7 +19,11 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
-    CORS(app, origins=["http://localhost:3000"])
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=["http://localhost:3000"]
+    )
 
     register_routes(app)
 
